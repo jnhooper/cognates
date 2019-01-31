@@ -139,12 +139,12 @@ export default {
   },
 
   User: {
-    messages: async (
+    cognates: async (
       user,
       args,
       { models }
     ) => {
-      return await models.Message.findAll(
+      return await models.Cognate.findAll(
         {
           where: {
             userId: user.id,

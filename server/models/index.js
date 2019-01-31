@@ -10,14 +10,14 @@ const sequelize = new Sequelize(
   process.env.DATABASE_PASSWORD,
   {
     dialect: 'postgres',
-    host: 'dockerNodeGraphql_postgres',
+    host: process.env.POSTGRES_CONTAINER,
   }
 );
 
 const models = {
   User: sequelize.import('./user'),
-  Message: sequelize.import(
-    './message'
+  Cognate: sequelize.import(
+    './cognate'
   ),
 };
 

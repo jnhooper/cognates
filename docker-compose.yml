@@ -9,7 +9,7 @@ services:
             POSTGRES_PASSWORD: postgres
             POSTGRES_DB: postgres
             POSTGRES_USER: postgres
-        container_name: dockerNodeGraphql_postgres
+        container_name: cognates_postgres
             
     web:
         build: .
@@ -26,5 +26,6 @@ services:
             DATABASE: postgres
             DATABASE_USER: postgres
             DATABASE_PASSWORD: postgres
+            POSTGRES_CONTAINER: cognates_postgres
             # change the secret  when you pull this and put into prod.
             SECRET: A.1238789783432098.7p[[p[wkfsd/fmd.fj

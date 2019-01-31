@@ -1,7 +1,7 @@
 import userResolvers from '../resolvers/user';
-import messageResolvers from '../resolvers/message';
+import cognateResolvers from '../resolvers/cognate';
 
 export default [
   userResolvers,
-  messageResolvers,
+  cognateResolvers,
 ];

@@ -7,47 +7,48 @@ import {
 
 export default {
   Query: {
-    messages: async (
+    cognates: async (
       parent,
       { offset = 0, limit = 100 },
       { models }
     ) => {
-      return await models.Message.findAll(
+      return await models.Cognate.findAll(
         {
           offset,
           limit,
         }
       );
     },
-    message: async (
+    cognate: async (
       parent,
       { id },
       { models }
     ) => {
-      return await models.Message.findById(
+      return await models.Cognate.findById(
         id
       );
     },
   },
 
   Mutation: {
-    createMessage: combineResolvers(
+    createCognate: combineResolvers(
       isAuthenticated,
       async (
         parent,
-        { text },
+        { english, russian },
         { me, models }
       ) => {
-        return await models.Message.create(
+        return await models.Cognate.create(
           {
-            text,
+            english,
+            russian,
             userId: me.id,
           }
         );
       }
     ),
 
-    deleteMessage: combineResolvers(
+    deleteCognate: combineResolvers(
       isAuthenticated,
       isMessageOwner,
       async (
@@ -55,21 +56,21 @@ export default {
         { id },
         { models }
       ) => {
-        return await models.Message.destroy(
+        return await models.Cognate.destroy(
           { where: { id } }
         );
       }
     ),
   },
 
-  Message: {
+  Cognate: {
     user: async (
-      message,
+      cognate,
       args,
       { models }
     ) => {
       return await models.User.findById(
-        message.userId
+        cognate.userId
       );
     },
   },
