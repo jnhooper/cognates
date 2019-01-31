@@ -49,14 +49,14 @@ const eraseDatabaseOnSync = true;
 
 sequelize.sync({ force: eraseDatabaseOnSync }).then(async () => {
   if (eraseDatabaseOnSync) {
-    createUserWidthMessages();
+    createUserWidthCognates();
   }
   app.listen({ port: 3000 }, () =>
     console.log(`🚀 Server ready at http://localhost:3000${server.graphqlPath}`)
   );
 });
 
-const createUserWidthMessages = async () => {
+const createUserWidthCognates = async () => {
   await models.User.create(
     {
       username: 'rwieruch',
@@ -65,12 +65,13 @@ const createUserWidthMessages = async () => {
       role: 'ADMIN',
       messages: [
         {
-          text: 'Published something'
+          english: 'John',
+          russian: 'Джон',
         }
       ]
     },
     {
-      include: [models.Message]
+      include: [models.Cognate]
     }
   );
 
@@ -79,14 +80,15 @@ const createUserWidthMessages = async () => {
       username: 'ddavids',
       email: 'hello@david.com',
       password: 'password',
-      messages: [
+      cognates: [
         {
-          text: 'Happy to release ...'
+          english: 'Doctor',
+          russian: 'Доктор',
         }
       ]
     },
     {
-      include: [models.Message]
+      include: [models.Cognate]
     }
   );
 };
