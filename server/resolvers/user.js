@@ -78,7 +78,7 @@ export default {
         token: createToken(
           user,
           secret,
-          '30m'
+          '30s'
         ),
       };
     },
@@ -114,7 +114,7 @@ export default {
         token: createToken(
           user,
           secret,
-          '30m'
+          '30s'
         ),
       };
     },
