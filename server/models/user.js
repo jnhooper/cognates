@@ -4,11 +4,19 @@ const user = (sequelize, DataTypes) => {
   const User = sequelize.define(
     'user',
     {
-      username: {
+      firstName: {
         type: DataTypes.STRING,
         allowNull: false,
         validate: {
           notEmpty: true,
+        },
+      },
+
+      lastName: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        validate: {
+          notEmpty: false,
         },
       },
 
@@ -58,14 +66,14 @@ const user = (sequelize, DataTypes) => {
     });
   };
 
-  User.findByLogin = async login => {
+  User.findByEmail = async email => {
     // let user = await User.findOne({
     //   where: { username: login },
     // });
 
     // if (!user) {
       let user = await User.findOne({
-        where: { email: login },
+        where: { email: email },
       });
     // }
 

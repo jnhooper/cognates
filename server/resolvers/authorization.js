@@ -43,3 +43,14 @@ export const isAdmin = combineResolvers(
           'Not authorized as admin.'
         )
 );
+
+export const isInstructor = combineResolvers(
+  isAuthenticated,
+  (parent, args, { me: { role }}) => 
+    role === 'INSTRUCTOR'
+      ? skip
+      : new ForbiddenError(
+        'Not authorized as instructor'
+      )
+
+)

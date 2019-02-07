@@ -21,6 +21,8 @@ export default gql`
     id: ID!
     english: String!
     russian: String!
+    isCorrect: Boolean!
+    isVocab: Boolean!
     user: User!
   }
 `;

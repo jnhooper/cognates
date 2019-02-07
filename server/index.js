@@ -13,7 +13,7 @@ const getMe = async req => {
     try {
       return await jwt.verify(token, process.env.SECRET);
     } catch (e) {
-      throw new AuthenticationError('Your session expired. Sign in again.');
+      console.log(e);
     }
   }
 };
@@ -59,11 +59,12 @@ sequelize.sync({ force: eraseDatabaseOnSync }).then(async () => {
 const createUserWidthCognates = async () => {
   await models.User.create(
     {
-      username: 'rwieruch',
-      email: 'hello@robin.com',
+      firstName: 'rwieruch',
+      lastName: 'some last name',
+      email: 'test@test.com',
       password: 'password',
       role: 'ADMIN',
-      messages: [
+      cognates: [
         {
           english: 'John',
           russian: 'Джон',
@@ -77,7 +78,7 @@ const createUserWidthCognates = async () => {
 
   await models.User.create(
     {
-      username: 'ddavids',
+      firstName: 'ddavids',
       email: 'hello@david.com',
       password: 'password',
       cognates: [

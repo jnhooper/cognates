@@ -9,13 +9,14 @@ export default gql`
 
   extend type Mutation {
     signUp(
-      username: String!
+      firstName: String!
+      lastName: String
       email: String!
       password: String!
     ): Token!
 
     signIn(
-      login: String!
+      email: String!
       password: String!
     ): Token!
 
@@ -28,7 +29,8 @@ export default gql`
 
   type User {
     id: ID!
-    username: String!
+    firstName: String!
+    lastName: String
     email: String!
     role: String
     cognates: [Cognate!]

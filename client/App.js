@@ -10,6 +10,13 @@ import gql from "graphql-tag";
 import { Mutation, Query, ApolloConsumer } from "react-apollo";
 import { onError } from "apollo-link-error";
 
+import 'typeface-roboto';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import TextField from '@material-ui/core/TextField'
+import Button from "@material-ui/core/Button";
+
+import Header from './containers/Header';
+import CognateContainer from './containers/CognateContainer';
 
 /**
  * AUTHENTICATION
@@ -21,50 +28,19 @@ const httpLink = createHttpLink({
 const authLink = setContext((_, { headers }) => {
   // get the authentication token from local storage if it exists
   const token = localStorage.getItem('x-token');
-  console.log('authlink', token);
-  console.log(localStorage)
   const customHeaders = {
     ...headers,
   };
-  // if(token){
-    customHeaders['x-token']= token ? token : ""
-    console.log(customHeaders)
-  // }
-  // return the headers to the context so httpLink can read them
+  customHeaders['x-token']= token ? token : ""
   return {
     headers: customHeaders
   }
 });
 
 const client = new ApolloClient({
-  // uri: "http://localhost:3000/graphql",
-
   link: authLink.concat(httpLink),
   cache: new InMemoryCache(),
-  // clientState: {
-  //   defaults: {
-  //     me: {
-  //       test:'ing'
-  //     }
-  //   }
-  // }
-
 });
-// cache.writeData({data:{test:"balls"}})
-
-
-// client
-//   .query({
-//     query: gql`
-//       { 
-//         users {
-//           email
-//           username
-//         }
-//       }
-//     `
-//   })
-//   .then(result => console.log("test",result));
 
   // MUTATION
   const CREATE_USER = gql`
@@ -84,85 +60,8 @@ const client = new ApolloClient({
   }
 `;
 
-/**
- * KABIR CODES
- */
 
-class WithHooperApp extends React.Component {
-
-  constructor(props){
-    super(props);
-    this.state = {
-      isAuthed: localStorage.getItem("x-token"),
-    }
-    console.log(this.state.isAuthed)
-    const apolloErrorLink = onError(({ networkError, operation, forward }) => {
-      // There's a bug in the apollo typedefs and `statusCode` is not recognized, but it's there
-      if (networkError && networkError.statusCode === 401) {
-        localStorage.deleteItem('x-token');
-        this.setState({ isAuthed: false });
-      }
-      return forward(operation);
-    });
-
-    const apolloAuthLink = setContext((_, { headers }) => ({
-      headers: {
-        ...headers,
-        "x-token": localStorage.getItem('x-token'),
-        Authorization: `Bearer: ${localStorage.getItem('x-token')}`,
-      },
-    }));
-
-    // const apolloHttpLink = createHttpLink({ uri: apiRoutes.graphql() });
-    const apolloHttpLink = createHttpLink({
-      uri: "http://localhost:3000/graphql",
-    })
-
-    const apolloCache = new InMemoryCache();
-
-    this.apolloClient = new ApolloClient({
-      link: apolloAuthLink.concat(apolloHttpLink),
-      cache: apolloCache,
-    });
-  }
-
-  componentDidMount() {
-    this.setState({ isAuthed: localStorage.getItem("x-token")})//isEmpty(localStorage.getItem("hooper-app-token")) });
-
-  }
-
-
-  handleLogin = (token) => {
-    console.log(token)
-    // localStorage.setItem('x-token', token);
-    this.setState({ isAuthed: true });
-  }
-
-  render() {
-    const { isAuthed } = this.state;
-    return (
-      <ApolloProvider client={this.apolloClient}>
-        {this.props.children({ isAuthed, handleLogin: this.handleLogin })}
-      </ApolloProvider>
-     );
-  }
-}
-
-/*************************************************************************************
- * end kabir codes
- */
-
-
-const oldGET_ME= gql`
-  query me {
-    user {
-      username
-      email
-    }
-  }
-`;
-
-const GET_ME = gql`
+export const GET_ME = gql`
   {
     me {
       username
@@ -170,13 +69,6 @@ const GET_ME = gql`
     }
   }
 `
-
-const client_GET_ME = gql`
-  query pleaseGetMe {
-    test @client
-  }
-`
-
 
 const SignUp = (props) => {
   let username;
@@ -194,40 +86,21 @@ const SignUp = (props) => {
       <Mutation 
         mutation={CREATE_USER}
         onError={(error)=> {
-          console.log('shit')
-          console.warn(error);
+          console.error(error);
           localStorage.removeItem("x-token")
-          client_local.clearStore();
         }}
         onCompleted={(data) => {
           console.log(data.signUp)
           localStorage['x-token'] = data.signUp.token;
-          client_local.clearStore().then(() => props.onSuccess(data))
           // props.onSuccess(data);
-          // client_local.writeData({data: {test: "fuck"}});
-          // props.onSuccess(result)
-          //update the user
-          // client
-          //   .query({
-          //     query: gql`
-          //       { 
-          //         me {
-          //           email
-          //           username
-          //         }
-          //       }
-          //     `
-          //   })
-          // client_local.query({query: GET_ME})
-          //   .then(result => {
-          //     console.log(result.data);
-          //     client_local.writeData({data: {test: "shit"}})
-          //     console.log(client_local);
-          //     console.log("result", result);
-          //     props.onSuccess(result);
-          //     // console.log(cache)
-              
-          //   });
+        }}
+        update={(cache, { data: { me } }) => {
+          // const { me } = cache.readQuery({ query: GET_ME });
+          client_local.query(GET_ME)
+          cache.writeQuery({
+            query: GET_ME,
+            data: { me: me},
+          });
         }}
       >
       {(signUp, { data }) => (
@@ -268,7 +141,13 @@ const SignUp = (props) => {
                 password = node;
               }}
             />
-            <button type="submit">Add Todo</button>
+            <Button
+              variant="contained"
+              color="primary"
+              type="submit"
+            >
+              Sign Up
+            </Button>
           </form>
         </div>
       )}
@@ -278,7 +157,7 @@ const SignUp = (props) => {
         onCompleted={(data) => {
           console.log(data.signIn)
           localStorage['x-token'] = data.signIn.token;
-          client_local.clearStore().then(() => props.onSuccess(data))
+          props.onSuccess(data);
         }
       }
     >
@@ -324,78 +203,34 @@ const SignUp = (props) => {
 }
 
 
-const Name = () => (
-  <Query
-    query={GET_ME}
-  >
-    {({ loading, error, data, refetch }) => {
-      console.log("data", data);
-      if (loading) return "Loading...";
-      if(error || !data.me) {
-          localStorage.removeItem("x-token")
-          client.cache.reset();
-          client.clearStore();
-        return <SignUp onSuccess={data => refetch()}/>
-      }
-      if (error) return `Error! ${error.message}`;
-      console.log("past signup", data);
+// const Name = () => (
+//   <Query
+//     query={GET_ME}
+//   >
+//     {({ loading, error, data, refetch }) => {
+//       if (loading) return "Loading...";
+//       if(!data.me) {
+//           localStorage.removeItem("x-token")
+//           // client.cache.reset();
+//         return <SignUp onSuccess={data => refetch()}/>
+//       }
+//       if (error) return `Error! ${error.message}`;
 
-      return (
-        <h3>{data.me.username}</h3>
-      );
-    }}
-  </Query>
-)
+//       return (
+//         <h3>{data.me.username}</h3>
+//       );
+//     }}
+//   </Query>
+// )
 
-class UserBar extends React.Component {
-  constructor(props){
-    super(props);
-    this.state = {
-      loggedIn: false,
-    }
-  }
-
-  render(){
-    return (
-      <div>
-        {
-          this.state.loggedIn &&
-          <Name/>
-        }
-        {
-          !this.state.loggedIn &&
-          <SignUp
-            onSuccess={()=>{this.setState({loggedIn: true})}}
-          />
-        }
-      </div>
-    )
-  }
-}
 
 const App = () => (
   <ApolloProvider client={client}>
-  <Name/>
-    {/* <UserBar/> */}
+    <CssBaseline/>
+    <Header/>
+    <CognateContainer client={client}/>
   </ApolloProvider>
 );
-
-// const KabirApp = () => (
-//   <WithHooperApp>
-//     {({ isAuthed, handleLogin }) => {
-//       if (!isAuthed) {
-//         console.log("sign up", isAuthed)
-//         return (
-//            <SignUp onSuccess={handleLogin}/>
-//         )
-//        } else {
-//         console.log("view name", isAuthed)
-//          return <Name/>
-//        }
-//       }
-//     }
-//   </WithHooperApp>
-// )
 
 export default hot(module)(App);
 

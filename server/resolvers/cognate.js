@@ -35,7 +35,7 @@ export default {
       isAuthenticated,
       async (
         parent,
-        { english, russian },
+        { english, russian, isVocab },
         { me, models }
       ) => {
         return await models.Cognate.create(
@@ -43,6 +43,7 @@ export default {
             english,
             russian,
             userId: me.id,
+            isVocab
           }
         );
       }

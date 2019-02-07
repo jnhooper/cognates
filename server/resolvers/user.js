@@ -14,11 +14,12 @@ const createToken = async (
   const {
     id,
     email,
-    username,
+    firstName,
+    lastName,
     role,
   } = user;
   return await jwt.sign(
-    { id, email, username, role },
+    { id, email, firstName, lastName, role },
     secret,
     {
       expiresIn,
@@ -62,12 +63,13 @@ export default {
     // sign a user up
     signUp: async (
       parent,
-      { username, email, password },
+      { firstName, lastName, email, password },
       { models, secret }
     ) => {
       const user = await models.User.create(
         {
-          username,
+          firstName,
+          lastName,
           email,
           password,
         }
@@ -80,22 +82,22 @@ export default {
           secret,
           '30s'
         ),
-      };
+      }
     },
 
     // sign in
     signIn: async (
       parent,
-      { login, password },
+      { email, password },
       { models, secret }
     ) => {
-      const user = await models.User.findByLogin(
-        login
+      const user = await models.User.findByEmail(
+        email
       );
 
       if (!user) {
         throw new UserInputError(
-          'No user found with this login credentials.'
+          'No user found with this email credentials.'
         );
       }
 

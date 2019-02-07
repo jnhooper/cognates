@@ -6,7 +6,7 @@ const webpack = require('webpack');
 module.exports = {
   mode: "development",
   entry: {
-    app: './client/index.js'
+    app: ['babel-polyfill', './client/index.js']
   },
   devtool: 'inline-source-map',
   devServer: {
@@ -26,8 +26,15 @@ module.exports = {
           cacheDirectory: true,
           plugins: ['react-hot-loader/babel']
         },
+      },
+      {
+        test: /\.(woff|woff2|eot|ttf|svg|css)$/,
+        loader: 'file-loader?name=fonts/[name].[ext]'
       }
     ],
+  },
+  resolve: {
+    extensions: [".js", ".jsx"]
   },
   plugins: [
     new CleanWebpackPlugin(['dist']),
