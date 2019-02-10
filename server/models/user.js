@@ -61,15 +61,9 @@ const user = (sequelize, DataTypes) => {
   };
 
   User.findByEmail = async email => {
-    // let user = await User.findOne({
-    //   where: { username: login },
-    // });
-
-    // if (!user) {
     let user = await User.findOne({
       where: { email: email },
     });
-    // }
 
     return user;
   };
