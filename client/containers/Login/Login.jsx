@@ -1,26 +1,14 @@
+/** @jsx jsx */
+import { jsx, css } from '@emotion/core';
 import React from 'react';
 import { Mutation, ApolloConsumer } from 'react-apollo';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import { Form, Field } from 'react-final-form';
 
-import { GET_ME, CREATE_USER, SIGN_IN } from '../queries/user';
-import { GET_ALL_COGNATES } from './CognateContainer';
-
-class Input extends React.Component {
-  render() {
-    const { props } = this;
-    return (
-      <TextField
-        id={props.id}
-        label={props.label}
-        className={props.className}
-        type={props.type}
-        margin="normal"
-      />
-    );
-  }
-}
+import { GET_ME, CREATE_USER, SIGN_IN } from '../../queries/user';
+// import { GET_ALL_COGNATES } from './CognateContainer';
+import { grid, submitButtons, loginSignupButtons } from './styles';
 
 const formTypes = {
   login: 'LOGIN',
@@ -42,22 +30,17 @@ class Login extends React.Component {
     return this.state.formVisible === formTypes.login ? 'signIn' : 'signUp';
   };
 
-  generateInput = (id, label, type) => (
-    <TextField id={id} label={label} type={type} margin="normal" />
+  generateInput = (input, label, type) => (
+    <TextField label={label} {...input.input} type={type} margin="normal" />
   );
 
   render() {
-    let signInEmail;
-    let signInPassword;
     const props = this.props;
 
-    const firstName = (
-      <Input id="firstName" label="First Name" placeholder="First Name" />
-    );
     return (
       <div>
         {!this.state.formVisible && (
-          <React.Fragment>
+          <div css={css(loginSignupButtons)}>
             <Button
               onClick={() => {
                 this.showForm(formTypes.login);
@@ -72,7 +55,7 @@ class Login extends React.Component {
             >
               Sign Up
             </Button>
-          </React.Fragment>
+          </div>
         )}
         {this.state.formVisible && (
           <ApolloConsumer>
@@ -97,7 +80,8 @@ class Login extends React.Component {
                     <Form
                       onSubmit={async values => {
                         // e.preventDefault();
-                        console.log(values);
+                        console.log('values', values);
+                        console.log(values.firstName);
                         localStorage.removeItem('x-token');
                         const variables = {
                           ...values,
@@ -107,53 +91,45 @@ class Login extends React.Component {
                         });
                       }}
                       render={({ handleSubmit }) => (
-                        <form onSubmit={handleSubmit}>
+                        <form onSubmit={handleSubmit} css={css(grid)}>
                           {this.state.formVisible === 'SIGN_UP' && (
                             <>
-                              <Field
-                                name="firstName"
-                                component={() =>
-                                  this.generateInput('firstName', 'First Name')
+                              <Field name="firstName">
+                                {input =>
+                                  this.generateInput(input, 'First Name')
                                 }
-                              />
-                              <Field
-                                name="lastName"
-                                component={() =>
-                                  this.generateInput('lastName', 'Last Name')
+                              </Field>
+                              <Field name="lastName">
+                                {input =>
+                                  this.generateInput(input, 'Last Name')
                                 }
-                              />
+                              </Field>
                             </>
                           )}
-                          <Field
-                            name="email"
-                            component={() =>
-                              this.generateInput('email', 'Email')
+                          <Field name="email">
+                            {input => this.generateInput(input, 'Email')}
+                          </Field>
+
+                          <Field name="password" type="password">
+                            {input =>
+                              this.generateInput(input, 'Password', 'password')
                             }
-                            placeholder="email"
-                          />
-                          <Field
-                            name="password"
-                            type="password"
-                            component={() =>
-                              this.generateInput(
-                                'password',
-                                'Password',
-                                'password'
-                              )
-                            }
-                          />
-                          <Button
-                            variant="contained"
-                            color="primary"
-                            type="submit"
-                          >
-                            {this.state.formVisible === formTypes.login
-                              ? 'Login'
-                              : 'Sign Up'}
-                          </Button>
-                          <Button onClick={() => this.showForm(false)}>
-                            Cancel
-                          </Button>
+                          </Field>
+
+                          <div css={css(submitButtons)}>
+                            <Button onClick={() => this.showForm(false)}>
+                              Cancel
+                            </Button>
+                            <Button
+                              variant="contained"
+                              color="primary"
+                              type="submit"
+                            >
+                              {this.state.formVisible === formTypes.login
+                                ? 'Login'
+                                : 'Sign Up'}
+                            </Button>
+                          </div>
                         </form>
                       )}
                     />

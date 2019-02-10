@@ -28,7 +28,7 @@ const server = new ApolloServer({
 
     return {
       ...error,
-      message
+      message,
     };
   },
   context: async ({ req }) => {
@@ -37,19 +37,20 @@ const server = new ApolloServer({
     return {
       models,
       me,
-      secret: process.env.SECRET
+      secret: process.env.SECRET,
     };
-  }
+  },
 });
 
 const app = express();
 server.applyMiddleware({ app });
 
-const eraseDatabaseOnSync = true;
+const eraseDatabaseOnSync = false; //true;
 
 sequelize.sync({ force: eraseDatabaseOnSync }).then(async () => {
   if (eraseDatabaseOnSync) {
     createUserWidthCognates();
+    console.log('wtf');
   }
   app.listen({ port: 3000 }, () =>
     console.log(`🚀 Server ready at http://localhost:3000${server.graphqlPath}`)
@@ -68,11 +69,11 @@ const createUserWidthCognates = async () => {
         {
           english: 'John',
           russian: 'Джон',
-        }
-      ]
+        },
+      ],
     },
     {
-      include: [models.Cognate]
+      include: [models.Cognate],
     }
   );
 
@@ -85,11 +86,11 @@ const createUserWidthCognates = async () => {
         {
           english: 'Doctor',
           russian: 'Доктор',
-        }
-      ]
+        },
+      ],
     },
     {
-      include: [models.Cognate]
+      include: [models.Cognate],
     }
   );
 };

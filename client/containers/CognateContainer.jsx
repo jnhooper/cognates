@@ -1,69 +1,50 @@
-import React from 'react';
-import { hot } from 'react-hot-loader';
-import { ApolloProvider } from "react-apollo";
+/** @jsx jsx */
+import { jsx, css } from '@emotion/core';
+import React, { useState } from 'react';
+import { ApolloProvider } from 'react-apollo';
 import { createHttpLink } from 'apollo-link-http';
 import { setContext } from 'apollo-link-context';
 import { InMemoryCache } from 'apollo-cache-inmemory';
-import ApolloClient from "apollo-client";
-import gql from "graphql-tag";
-import { Mutation, Query, ApolloConsumer } from "react-apollo";
-import { onError } from "apollo-link-error";
-
-import Button from "@material-ui/core/Button";
+import ApolloClient from 'apollo-client';
+import gql from 'graphql-tag';
+import { Mutation, Query, ApolloConsumer } from 'react-apollo';
+import { onError } from 'apollo-link-error';
 
 import CreateCognate from './CreateCognate';
 
-export const GET_ALL_COGNATES = gql `
-query{
-  cognates {
-    english
-    russian
-    user {
-      email
+import Cognate from '../components/Cognate';
+import CognateList from '../components/CognateList';
+
+export const GET_ALL_COGNATES = gql`
+  query {
+    cognates {
+      english
+      russian
+      id
     }
   }
-  me {
-    email
-  }
-}
-`
+`;
 
-
-class CognateContainer extends React.Component{
-    
-  render(){
-    console.log('what')
-    return (
-      <Query
-        query={GET_ALL_COGNATES}
-      >
+const CognateContainer = props => {
+  return (
+    <Query query={GET_ALL_COGNATES}>
       {({ loading, error, data, refetch }) => {
-        console.log("data",error, data);
-        if (loading) return "Loading...";
+        console.log('data', error, data);
+        if (loading) return 'Loading...';
         if (error) return `Error! ${error.message}`;
+        const { cognates } = data;
+        // useState({ left: cognates.length - 1, center: 0, right: 1 });
+        if (cognates.length === 0) {
+          return <h1>hmmm... There's nothing here</h1>;
+        }
         return (
           <div>
-            <h1>Cognates:</h1>
-            {
-              data.cognates &&
-                data.cognates.map(cognate => (
-                  <React.Fragment>
-                  <h3>{cognate.english}</h3>
-                  <h3>{cognate.russian}</h3>
-                  </React.Fragment>
-                )
-              )
-            }
-            {
-              data.me && data.me.email &&
-                <CreateCognate client={this.props.client}/>
-            }
+            <CognateList cognates={cognates} />
           </div>
         );
       }}
-      </Query>
-    );
-  }
-}
+    </Query>
+  );
+};
 
 export default CognateContainer;
