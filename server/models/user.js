@@ -64,7 +64,6 @@ const user = (sequelize, DataTypes) => {
     let user = await User.findOne({
       where: { email: email },
     });
-    // }
 
     return user;
   };
