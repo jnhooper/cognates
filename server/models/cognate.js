@@ -25,6 +25,14 @@ const cognate = (
           },
         },
       },
+      isCorrect: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+      },
+      isVocab: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+      }
     }
   );
 

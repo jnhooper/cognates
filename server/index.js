@@ -13,7 +13,7 @@ const getMe = async req => {
     try {
       return await jwt.verify(token, process.env.SECRET);
     } catch (e) {
-      throw new AuthenticationError('Your session expired. Sign in again.');
+      console.log(e);
     }
   }
 };
@@ -28,7 +28,7 @@ const server = new ApolloServer({
 
     return {
       ...error,
-      message
+      message,
     };
   },
   context: async ({ req }) => {
@@ -37,19 +37,20 @@ const server = new ApolloServer({
     return {
       models,
       me,
-      secret: process.env.SECRET
+      secret: process.env.SECRET,
     };
-  }
+  },
 });
 
 const app = express();
 server.applyMiddleware({ app });
 
-const eraseDatabaseOnSync = true;
+const eraseDatabaseOnSync = false; //true;
 
 sequelize.sync({ force: eraseDatabaseOnSync }).then(async () => {
   if (eraseDatabaseOnSync) {
     createUserWidthCognates();
+    console.log('wtf');
   }
   app.listen({ port: 3000 }, () =>
     console.log(`🚀 Server ready at http://localhost:3000${server.graphqlPath}`)
@@ -59,36 +60,37 @@ sequelize.sync({ force: eraseDatabaseOnSync }).then(async () => {
 const createUserWidthCognates = async () => {
   await models.User.create(
     {
-      username: 'rwieruch',
-      email: 'hello@robin.com',
+      firstName: 'rwieruch',
+      lastName: 'some last name',
+      email: 'test@test.com',
       password: 'password',
       role: 'ADMIN',
-      messages: [
+      cognates: [
         {
           english: 'John',
           russian: 'Джон',
-        }
-      ]
+        },
+      ],
     },
     {
-      include: [models.Cognate]
+      include: [models.Cognate],
     }
   );
 
   await models.User.create(
     {
-      username: 'ddavids',
+      firstName: 'ddavids',
       email: 'hello@david.com',
       password: 'password',
       cognates: [
         {
           english: 'Doctor',
           russian: 'Доктор',
-        }
-      ]
+        },
+      ],
     },
     {
-      include: [models.Cognate]
+      include: [models.Cognate],
     }
   );
 };

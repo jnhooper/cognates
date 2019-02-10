@@ -4,9 +4,9 @@ const CleanWebpackPlugin = require('clean-webpack-plugin');
 const webpack = require('webpack');
 
 module.exports = {
-  mode: "development",
+  mode: 'development',
   entry: {
-    app: './client/index.js'
+    app: ['babel-polyfill', './client/index.js'],
   },
   devtool: 'inline-source-map',
   devServer: {
@@ -20,24 +20,34 @@ module.exports = {
       {
         test: /\.(js|jsx)$/,
         loader: require.resolve('babel-loader'),
+        resolve: {
+          extensions: ['.js', '.jsx'],
+        },
         options: {
           // include: path.resolve(__dirname, 'client'),
           include: './client',
           cacheDirectory: true,
-          plugins: ['react-hot-loader/babel']
+          plugins: ['react-hot-loader/babel'],
         },
-      }
+      },
+      {
+        test: /\.(woff|woff2|eot|ttf|svg|css)$/,
+        loader: 'file-loader?name=fonts/[name].[ext]',
+      },
     ],
+  },
+  resolve: {
+    extensions: ['.js', '.jsx'],
   },
   plugins: [
     new CleanWebpackPlugin(['dist']),
     new HtmlWebpackPlugin({
-      title: 'Hot Module Replacement'
+      title: 'Hot Module Replacement',
     }),
-    new webpack.HotModuleReplacementPlugin()
+    new webpack.HotModuleReplacementPlugin(),
   ],
   output: {
     filename: '[name].bundle.js',
-    path: path.resolve(__dirname, 'dist')
-  }
+    path: path.resolve(__dirname, 'dist'),
+  },
 };

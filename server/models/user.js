@@ -1,57 +1,58 @@
 import bcrypt from 'bcrypt';
 
 const user = (sequelize, DataTypes) => {
-  const User = sequelize.define(
-    'user',
-    {
-      username: {
-        type: DataTypes.STRING,
-        unique: true,
-        allowNull: false,
-        validate: {
-          notEmpty: true,
+  const User = sequelize.define('user', {
+    firstName: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notEmpty: true,
+      },
+    },
+
+    lastName: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      validate: {
+        notEmpty: false,
+      },
+    },
+
+    email: {
+      type: DataTypes.STRING,
+      unique: true,
+      allowNull: false,
+      validate: {
+        notEmpty: {
+          args: true,
+          msg: 'An email cannot be empty.',
+        },
+        isEmail: {
+          args: true,
+          msg: 'Not a valid email.',
         },
       },
+    },
 
-      email: {
-        type: DataTypes.STRING,
-        unique: true,
-        allowNull: false,
-        validate: {
-          notEmpty: {
-            args: true,
-            msg:
-              'An email cannot be empty.',
-          },
-          isEmail: {
-            args: true,
-            msg: 'Not a valid email.',
-          },
+    password: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notEmpty: {
+          args: true,
+          msg: 'password cannot be empty',
+        },
+        len: {
+          args: [5, 42],
+          msg: 'password must be between 5 and 42 characters',
         },
       },
+    },
 
-      password: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        validate: {
-          notEmpty: {
-            args: true,
-            msg:
-              'password cannot be empty',
-          },
-          len: {
-            args: [7, 42],
-            msg:
-              'password must be between 7 and 42 characters',
-          },
-        },
-      },
-
-      role: {
-        type: DataTypes.STRING,
-      },
-    }
-  );
+    role: {
+      type: DataTypes.STRING,
+    },
+  });
 
   User.associate = models => {
     User.hasMany(models.Cognate, {
@@ -59,16 +60,10 @@ const user = (sequelize, DataTypes) => {
     });
   };
 
-  User.findByLogin = async login => {
+  User.findByEmail = async email => {
     let user = await User.findOne({
-      where: { username: login },
+      where: { email: email },
     });
-
-    if (!user) {
-      user = await User.findOne({
-        where: { email: login },
-      });
-    }
 
     return user;
   };
@@ -79,19 +74,11 @@ const user = (sequelize, DataTypes) => {
 
   User.prototype.generatePasswordHash = async function() {
     const saltRounds = 10;
-    return await bcrypt.hash(
-      this.password,
-      saltRounds
-    );
+    return await bcrypt.hash(this.password, saltRounds);
   };
 
-  User.prototype.validatePassword = async function(
-    password
-  ) {
-    return await bcrypt.compare(
-      password,
-      this.password
-    );
+  User.prototype.validatePassword = async function(password) {
+    return await bcrypt.compare(password, this.password);
   };
 
   return User;
