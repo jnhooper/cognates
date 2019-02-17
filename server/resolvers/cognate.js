@@ -4,7 +4,7 @@ import { isAuthenticated, isMessageOwner, canCreate } from './authorization';
 
 export default {
   Query: {
-    cognates: async (parent, { offset = 0, limit = 100 }, { models }) => {
+    cognates: async (parent, { offset, limit }, { models }) => {
       return await models.Cognate.findAll({
         offset,
         limit,
