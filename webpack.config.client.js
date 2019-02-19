@@ -17,12 +17,17 @@ module.exports = {
   },
   module: {
     rules: [
+      // All files with a '.ts' or '.tsx' extension will be handled by 'awesome-typescript-loader'.
+      { test: /\.tsx?$/, loader: 'ts-loader', exclude: /node_modules/ },
+
+      // All output '.js' files will have any sourcemaps re-processed by 'source-map-loader'.
+      { enforce: 'pre', test: /\.js$/, loader: 'source-map-loader' },
       {
         test: /\.(js|jsx)$/,
         loader: require.resolve('babel-loader'),
-        resolve: {
-          extensions: ['.js', '.jsx'],
-        },
+        // resolve: {
+        //   extensions: ['.js', '.jsx'],
+        // },
         options: {
           // include: path.resolve(__dirname, 'client'),
           include: './client',
@@ -37,7 +42,7 @@ module.exports = {
     ],
   },
   resolve: {
-    extensions: ['.js', '.jsx'],
+    extensions: ['.js', '.jsx', '.ts', '.tsx'],
   },
   plugins: [
     new CleanWebpackPlugin(['dist']),

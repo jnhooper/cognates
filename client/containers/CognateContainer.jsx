@@ -25,26 +25,24 @@ export const GET_ALL_COGNATES = gql`
   }
 `;
 
-const CognateContainer = props => {
-  return (
-    <Query query={GET_ALL_COGNATES}>
-      {({ loading, error, data, refetch }) => {
-        console.log('data', error, data);
-        if (loading) return 'Loading...';
-        if (error) return `Error! ${error.message}`;
-        const { cognates } = data;
-        // useState({ left: cognates.length - 1, center: 0, right: 1 });
-        if (cognates.length === 0) {
-          return <h1>hmmm... There's nothing here</h1>;
-        }
-        return (
-          <div>
-            <CognateList cognates={cognates} />
-          </div>
-        );
-      }}
-    </Query>
-  );
-};
+const CognateContainer = props => (
+  <Query query={GET_ALL_COGNATES}>
+    {({ loading, error, data, refetch }) => {
+      console.log('data', error, data);
+      if (loading) return 'Loading...';
+      if (error) return `Error! ${error.message}`;
+      const { cognates } = data;
+      // useState({ left: cognates.length - 1, center: 0, right: 1 });
+      if (cognates.length === 0) {
+        return <h1>hmmm... There's nothing here</h1>;
+      }
+      return (
+        <div>
+          <CognateList cognates={cognates} />
+        </div>
+      );
+    }}
+  </Query>
+);
 
 export default CognateContainer;
