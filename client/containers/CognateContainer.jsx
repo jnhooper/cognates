@@ -14,6 +14,7 @@ import CreateCognate from './CreateCognate';
 
 import Cognate from '../components/Cognate';
 import CognateList from '../components/CognateList';
+import Hello from '../components/Hello';
 
 export const GET_ALL_COGNATES = gql`
   query {
@@ -35,7 +36,7 @@ const CognateContainer = props => {
         const { cognates } = data;
         // useState({ left: cognates.length - 1, center: 0, right: 1 });
         if (cognates.length === 0) {
-          return <h1>hmmm... There's nothing here</h1>;
+          return <h1>hmmm... There's nothing here <Hello compiler="my ass" framework="finally"/></h1>;
         }
         return (
           <div>
